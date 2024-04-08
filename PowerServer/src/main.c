@@ -1,6 +1,12 @@
 #include <stdio.h>
-int main() {
+#include "../include/server.h"
 
-   printf("Hello, World!");
-   return 0;
+int main()
+{
+    printf("Starting the Server\n");
+    server_t* server = Server__create("127.0.0.1", 8080);
+    Server__start(server);
+    printf("Exiting the Server\n");
+    Server__destroy(server);
+    printf("Cleaned up the Server\n");
 }

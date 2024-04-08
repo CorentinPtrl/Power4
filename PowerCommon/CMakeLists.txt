@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.11)
+
+project(PowerCommon VERSION 1.0)
+
+include_directories(include)
+
+file(GLOB SRCS src/*.c)
+
+add_library(PowerCommon ${SRCS})
+
+install(TARGETS PowerCommon
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib)

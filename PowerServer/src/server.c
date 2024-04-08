@@ -13,6 +13,8 @@
 #include <unistd.h> // read(), write(), close()
 #include <arpa/inet.h>
 #include "server.h"
+#include "include/Handshake.h"
+
 #define SA struct sockaddr
 
 void Server__init(server_t * self, char* address, int port) {
@@ -34,25 +36,9 @@ void Server__destroy(server_t* self) {
 
 void Server__handle_client(server_t* self, int connfd)
 {
-    char buff[1024];
-    int n;
-    for (;;) {
-        bzero(buff, 1024);
-
-        read(connfd, buff, sizeof(buff));
-        printf("From client: %s\t To client : ", buff);
-        bzero(buff, 1024);
-        n = 0;
-        while ((buff[n++] = getchar()) != '\n')
-            ;
-
-        write(connfd, buff, sizeof(buff));
-
-        if (strncmp("exit", buff, 4) == 0) {
-            printf("Server Exit...\n");
-            break;
-        }
-    }
+    handshake_t* handshake = Handshake__create("");
+    Packet__decode(Handshake__to_packet(handshake), connfd);
+    printf("Username: %s\n", Handshake__username(handshake));
 }
 
 void Server__start(server_t* self) {

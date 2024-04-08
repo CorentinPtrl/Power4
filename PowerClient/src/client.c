@@ -11,6 +11,8 @@
 #include <unistd.h> // read(), write(), close()
 #include <malloc.h>
 #include "client.h"
+#include "include/Handshake.h"
+
 #define SA struct sockaddr
 
 void Client__init(client_t * self, char* address, int port) {
@@ -32,23 +34,8 @@ void Client__destroy(client_t* self) {
 
 void Client__handle(client_t* self, int sockfd)
 {
-    char buff[1024];
-    int n;
-    for (;;) {
-        bzero(buff, sizeof(buff));
-        printf("Enter the string : ");
-        n = 0;
-        while ((buff[n++] = getchar()) != '\n')
-            ;
-        write(sockfd, buff, sizeof(buff));
-        bzero(buff, sizeof(buff));
-        read(sockfd, buff, sizeof(buff));
-        printf("From Server : %s", buff);
-        if ((strncmp(buff, "exit", 4)) == 0) {
-            printf("Client Exit...\n");
-            break;
-        }
-    }
+    handshake_t* handshake = Handshake__create("corentin");
+    Packet__encode(Handshake__to_packet(handshake), sockfd);
 }
 
 void Client__start(client_t* self) {

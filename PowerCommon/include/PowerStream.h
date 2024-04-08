@@ -9,6 +9,7 @@ typedef struct PowerStream {
     char* buffer;
     int buffer_capacity;
     int offset;
+    int is_connected;
 } power_stream_t;
 
 power_stream_t* Power__create(int sd);

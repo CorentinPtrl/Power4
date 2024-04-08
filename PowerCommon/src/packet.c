@@ -62,7 +62,7 @@ packet_t *Packet__from_stream(power_stream_t *stream) {
     int id = Power__read_int(stream);
     packet_t* result = NULL;
     switch (id) {
-        case 0:
+        case 1:
             result = Handshake__to_packet(Handshake__create(""));
             break;
         default:

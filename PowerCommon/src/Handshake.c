@@ -21,7 +21,7 @@ const char* Handshake__name_override(packet_t* self) {
 }
 
 const int Handshake__id_override(packet_t* self) {
-    return 0;
+    return 1;
 }
 
 void Handshake__decode_override(packet_t* self, power_stream_t* stream) {

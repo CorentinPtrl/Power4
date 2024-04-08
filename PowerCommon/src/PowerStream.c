@@ -7,6 +7,7 @@
 #include <malloc.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 power_stream_t* Power__create(int sd) {
     power_stream_t* result = (power_stream_t*) malloc(sizeof(power_stream_t));
@@ -14,6 +15,7 @@ power_stream_t* Power__create(int sd) {
     result->buffer = (char*) malloc(1024);
     result->buffer_capacity = 1024;
     result->offset = 0;
+    result->is_connected = 1;
     return result;
 }
 
@@ -24,7 +26,8 @@ void Power__destroy(power_stream_t* self) {
 
 int Power__read_int(power_stream_t* self) {
     int result;
-    read(self->socket_descriptor, &result, sizeof(result));
+    if(read(self->socket_descriptor, &result, sizeof(result)) == 0)
+        self->is_connected = 0;
     return result;
 }
 char Power__read_char(power_stream_t* self) {
@@ -36,7 +39,8 @@ char Power__read_char(power_stream_t* self) {
 char* Power__read_string(power_stream_t* self) {
     int size = Power__read_int(self);
     char* result = (char*) malloc(size + 1);
-    read(self->socket_descriptor, result, size);
+    if(read(self->socket_descriptor, result, size) == 0)
+        self->is_connected = 0;
     result[size] = '\0';
     return result;
 }

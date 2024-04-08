@@ -34,11 +34,14 @@ void Server__destroy(server_t* self) {
     }
 }
 
-void Server__handle_client(server_t* self, int connfd)
+void Server__handle_client(server_t* self, power_stream_t* stream)
 {
-    handshake_t* handshake = Handshake__create("");
-    Packet__decode(Handshake__to_packet(handshake), connfd);
-    printf("Username: %s\n", Handshake__username(handshake));
+    while (1) {
+        packet_t* packet = Packet__from_stream(stream);
+        Packet__decode(packet, stream);
+        printf("Username: %s\n", Handshake__username(Handshake__from_packet(packet)));
+        sleep(1);
+    }
 }
 
 void Server__start(server_t* self) {
@@ -80,8 +83,8 @@ void Server__start(server_t* self) {
     }
     else
         printf("server accept the client...\n");
-
-    Server__handle_client(self, connfd);
+    power_stream_t* stream = Power__create(connfd);
+    Server__handle_client(self, stream);
 
     close(sockfd);
 }

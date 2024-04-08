@@ -20,30 +20,19 @@ const char* Handshake__name_override(packet_t* self) {
     return "Handshake";
 }
 
-void Handshake__decode_override(packet_t* self, int sd) {
-    char buffer[1024];
-    int size;
-    read(sd, &size, sizeof(size));
-    read(sd, buffer, size);
-    buffer[size] = '\0';
-    handshake_data_t* handshake_data = Handshake__packet_data(Handshake__from_packet(self));
-    handshake_data->username = strdup(buffer);
+const int Handshake__id_override(packet_t* self) {
+    return 0;
 }
 
-void Handshake__encode_override(packet_t* self, int sd) {
-    char* username = Handshake__packet_data(Handshake__from_packet(self))->username;
-    int size = strlen(username);
+void Handshake__decode_override(packet_t* self, power_stream_t* stream) {
+    char* username = Power__read_string(stream);
+    handshake_data_t* handshake_data = Handshake__packet_data(Handshake__from_packet(self));
+    handshake_data->username = strdup(username);
+}
 
-    char buffer[1024];
-
-    int offset = 0;
-
-    memcpy(buffer + offset, &size, sizeof(size));
-    offset += sizeof(size);
-
-    strcpy(buffer + offset, username);
-    offset += strlen(username);
-    write(sd, buffer, offset);
+void Handshake__encode_override(packet_t* self, power_stream_t* stream) {
+    handshake_data_t* handshake_data = Handshake__packet_data(Handshake__from_packet(self));
+    Power__write_string(stream, handshake_data->username);
 }
 
 void Handshake__destroy_override(packet_t* self) {
@@ -66,6 +55,7 @@ handshake_t* Handshake__create(char* username) {
     packet_type_t* packet_type = PacketType__create(
             sizeof(handshake_data_t),
             Handshake__name_override,
+            Handshake__id_override,
             Handshake__decode_override,
             Handshake__encode_override,
             Handshake__destroy_override

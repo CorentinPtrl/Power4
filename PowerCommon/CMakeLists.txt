@@ -6,7 +6,9 @@ include_directories(include)
 
 file(GLOB SRCS src/*.c)
 
-add_library(PowerCommon ${SRCS})
+add_library(PowerCommon ${SRCS}
+        src/PowerStream.c
+        include/PowerStream.h)
 
 install(TARGETS PowerCommon
         LIBRARY DESTINATION lib

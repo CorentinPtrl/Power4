@@ -4,16 +4,19 @@
 
 #include <malloc.h>
 #include "packet.h"
+#include "Handshake.h"
 
 packet_type_t* PacketType__create(
         int buffer_size,
         const char* (*name)(packet_t*),
-        void (*decode)(packet_t*, int),
-        void (*encode)(packet_t*, int),
+        const int (*id)(packet_t*),
+        void (*decode)(packet_t*, power_stream_t*),
+        void (*encode)(packet_t*, power_stream_t*),
         void (*destroy)(packet_t*)) {
     packet_type_t* result = (packet_type_t*) malloc(sizeof(packet_type_t));
     result->buffer_size = buffer_size;
     result->name = name;
+    result->id = id;
     result->decode = decode;
     result->encode = encode;
     result->destroy = destroy;
@@ -42,15 +45,31 @@ const char* Packet__name(packet_t* self) {
     return "Unknown";
 }
 
-void Packet__encode(packet_t* self, int sd) {
+void Packet__encode(packet_t* self, power_stream_t* stream) {
     if(self) {
-        self->type->encode(self, sd);
+        Power__write_int(stream, self->type->id(self));
+        self->type->encode(self, stream);
+        Power__flush(stream);
     }
 }
-void Packet__decode(packet_t* self, int sd) {
+void Packet__decode(packet_t* self, power_stream_t* stream) {
     if(self) {
-        self->type->decode(self, sd);
+        self->type->decode(self, stream);
     }
+}
+
+packet_t *Packet__from_stream(power_stream_t *stream) {
+    int id = Power__read_int(stream);
+    packet_t* result = NULL;
+    switch (id) {
+        case 0:
+            result = Handshake__to_packet(Handshake__create(""));
+            break;
+        default:
+            printf("Unknown packet id: %d\n", id);
+            break;
+    }
+    return result;
 }
 
 void Packet__destroy(packet_t* packet) {

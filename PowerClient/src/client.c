@@ -32,10 +32,22 @@ void Client__destroy(client_t* self) {
     }
 }
 
-void Client__handle(client_t* self, int sockfd)
+void Client__handle(client_t* self, power_stream_t* stream)
 {
     handshake_t* handshake = Handshake__create("corentin");
-    Packet__encode(Handshake__to_packet(handshake), sockfd);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
+    Packet__encode(Handshake__to_packet(handshake), stream);
 }
 
 void Client__start(client_t* self) {
@@ -62,8 +74,8 @@ void Client__start(client_t* self) {
     }
     else
         printf("connected to the server..\n");
-
-    Client__handle(self, sockfd);
+    power_stream_t* stream = Power__create(sockfd);
+    Client__handle(self, stream);
 
     close(sockfd);
 }

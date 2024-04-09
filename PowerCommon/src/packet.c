@@ -9,9 +9,10 @@
 packet_type_t* PacketType__create(
         int buffer_size,
         const char* (*name)(packet_t*),
-        const int (*id)(packet_t*),
+        int (*id)(packet_t*),
         void (*decode)(packet_t*, power_stream_t*),
         void (*encode)(packet_t*, power_stream_t*),
+        void (*handle)(packet_t*),
         void (*destroy)(packet_t*)) {
     packet_type_t* result = (packet_type_t*) malloc(sizeof(packet_type_t));
     result->buffer_size = buffer_size;
@@ -19,6 +20,7 @@ packet_type_t* PacketType__create(
     result->id = id;
     result->decode = decode;
     result->encode = encode;
+    result->handle = handle;
     result->destroy = destroy;
     return result;
 }
@@ -58,6 +60,18 @@ void Packet__decode(packet_t* self, power_stream_t* stream) {
     }
 }
 
+void Packet__handle(packet_t* self) {
+    if(self) {
+        self->type->handle(self);
+    }
+}
+
+void Packet__destroy(packet_t* packet) {
+    if (packet) {
+        packet->type->destroy(packet);
+    }
+}
+
 packet_t *Packet__from_stream(power_stream_t *stream) {
     int id = Power__read_int(stream);
     packet_t* result = NULL;
@@ -70,10 +84,4 @@ packet_t *Packet__from_stream(power_stream_t *stream) {
             break;
     }
     return result;
-}
-
-void Packet__destroy(packet_t* packet) {
-    if (packet) {
-        packet->type->destroy(packet);
-    }
 }

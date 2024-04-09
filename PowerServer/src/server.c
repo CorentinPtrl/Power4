@@ -39,7 +39,7 @@ void Server__handle_client(server_t* self, power_stream_t* stream)
     while (stream->is_connected) {
         packet_t* packet = Packet__from_stream(stream);
         Packet__decode(packet, stream);
-        printf("Username: %s\n", Handshake__username(Handshake__from_packet(packet)));
+        Packet__handle(packet);
         Packet__destroy(packet);
     }
 }

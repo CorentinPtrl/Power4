@@ -16,18 +16,20 @@ typedef struct Packet {
 typedef struct PacketType {
     int buffer_size;
     const char* (*name)(packet_t*);
-    const int (*id)(packet_t*);
+    int (*id)(packet_t*);
     void (*decode)(packet_t*, power_stream_t*);
     void (*encode)(packet_t*, power_stream_t*);
+    void (*handle)(packet_t*);
     void (*destroy)(packet_t*);
 } packet_type_t;
 
 packet_type_t* PacketType__create(
         int buffer_size,
         const char* (*name)(packet_t*),
-        const int (*id)(packet_t*),
+        int (*id)(packet_t*),
         void (*decode)(packet_t*, power_stream_t*),
         void (*encode)(packet_t*, power_stream_t*),
+        void (*handle)(packet_t*),
         void (*destroy)(packet_t*));
 
 packet_t* Packet__create(packet_type_t* type);
@@ -36,6 +38,7 @@ void* Packet__buffer(packet_t* self);
 const char* Packet__name(packet_t* self);
 void Packet__encode(packet_t* self, power_stream_t* stream);
 void Packet__decode(packet_t* self, power_stream_t* stream);
+void Packet__handle(packet_t* self);
 packet_t *Packet__from_stream(power_stream_t *stream);
 void Packet__destroy(packet_t* self);
 

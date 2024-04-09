@@ -20,7 +20,7 @@ const char* Handshake__name_override(packet_t* self) {
     return "Handshake";
 }
 
-const int Handshake__id_override(packet_t* self) {
+int Handshake__id_override(packet_t* self) {
     return 1;
 }
 
@@ -33,6 +33,11 @@ void Handshake__decode_override(packet_t* self, power_stream_t* stream) {
 void Handshake__encode_override(packet_t* self, power_stream_t* stream) {
     handshake_data_t* handshake_data = Handshake__packet_data(Handshake__from_packet(self));
     Power__write_string(stream, handshake_data->username);
+}
+
+void Handshake__handle_override(packet_t* self) {
+    handshake_data_t* handshake_data = Handshake__packet_data(Handshake__from_packet(self));
+    printf("Handshake from %s\n", handshake_data->username);
 }
 
 void Handshake__destroy_override(packet_t* self) {
@@ -58,6 +63,7 @@ handshake_t* Handshake__create(char* username) {
             Handshake__id_override,
             Handshake__decode_override,
             Handshake__encode_override,
+            Handshake__handle_override,
             Handshake__destroy_override
     );
 

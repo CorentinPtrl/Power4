@@ -1,5 +1,7 @@
 FROM ubuntu:latest
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update
 
 RUN apt-get install -y \
@@ -9,7 +11,9 @@ RUN apt-get install -y \
     libssl-dev \
     libuv1-dev \
     libcsfml-dev \
-    libsfml-dev
+    libsfml-dev \
+    libpq-dev
+
 WORKDIR /app
 
 COPY . .
@@ -20,4 +24,4 @@ RUN make
 
 EXPOSE 8080
 
-CMD ["./PowerServer/PowerServer"]
+ENTRYPOINT ["./PowerServer/PowerServer"]

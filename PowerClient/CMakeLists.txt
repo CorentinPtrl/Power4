@@ -8,7 +8,7 @@ include_directories(include)
 
 include_directories(${CMAKE_SOURCE_DIR}/PowerCommon)
 
-file(GLOB SRCS src/*.c)
+file(GLOB_RECURSE SRCS src/*.c)
 
 add_executable(PowerClient ${SRCS})
 

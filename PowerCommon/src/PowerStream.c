@@ -56,7 +56,7 @@ void Power__write_char(power_stream_t* self, char value) {
 }
 
 void Power__write_string(power_stream_t* self, char* value) {
-    int size = strlen(value);
+    size_t size = strlen(value);
     Power__write_int(self, size);
     memcpy(self->buffer + self->offset, value, size);
     self->offset += size;
@@ -65,4 +65,9 @@ void Power__write_string(power_stream_t* self, char* value) {
 void Power__flush(power_stream_t* self) {
     write(self->socket_descriptor, self->buffer, self->offset);
     self->offset = 0;
+}
+
+void Power__close(power_stream_t* self) {
+    close(self->socket_descriptor);
+    self->is_connected = 0;
 }

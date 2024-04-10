@@ -52,7 +52,6 @@ handshake_t* Handshake__from_packet(packet_t* self) {
     if (!self)  {
         return ((handshake_t*) 0);
     }
-
     return ((handshake_t*) self);
 }
 

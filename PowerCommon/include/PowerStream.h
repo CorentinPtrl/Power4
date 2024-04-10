@@ -21,4 +21,5 @@ void Power__write_int(power_stream_t* self, int value);
 void Power__write_char(power_stream_t* self, char value);
 void Power__write_string(power_stream_t* self, char* value);
 void Power__flush(power_stream_t* self);
+void Power__close(power_stream_t* self);
 #endif //POWERMATCHMAKING_POWERSTREAM_H
